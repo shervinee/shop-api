@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: shop-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: shop-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # kafka:  # <- enable later if you want today
+  #   image: bitnami/kafka:3.7
+  #   container_name: shop-kafka
+  #   environment:
+  #     - KAFKA_ENABLE_KRAFT=yes
+  #     - KAFKA_CFG_NODE_ID=1
+  #     - KAFKA_CFG_PROCESS_ROLES=broker,controller
+  #     - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:9094
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:${KAFKA_EXTERNAL_PORT}
+  #     - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+  #     - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+  #     - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+  #   ports:
+  #     - "${KAFKA_EXTERNAL_PORT}:9094"
+  #   volumes:
+  #     - kafka_data:/bitnami/kafka
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:${KAFKA_EXTERNAL_PORT} --list >/dev/null 2>&1 || exit 1"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 30
+
+  # keycloak:  # <- enable later (we’ll wire auth on Day 6–7)
+  #   image: quay.io/keycloak/keycloak:25.0
+  #   container_name: shop-keycloak
+  #   command: ["start-dev"]
+  #   environment:
+  #     KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+  #     KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+  #     KC_HTTP_PORT: ${KEYCLOAK_HTTP_PORT}
+  #   ports:
+  #     - "${KEYCLOAK_HTTP_PORT}:${KEYCLOAK_HTTP_PORT}"
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-fsS", "http://localhost:${KEYCLOAK_HTTP_PORT}/"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 30
+
+volumes:
+  pgdata:
+  kafka_data:
