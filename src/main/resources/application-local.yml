@@ -1,3 +1,18 @@
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc.:
+            bind: trace
+      flywaydb:
+        core: info
+      springframework:
+        security: debug
+    com:
+      zaxxer:
+        hikari: inf
 spring:
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:shop}
@@ -7,10 +22,16 @@ spring:
     hibernate:
       ddl-auto: update
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
   data:
     redis:
       host: localhost
       port: ${REDIS_PORT:6379}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 server:
   port: 8080
