@@ -12,7 +12,7 @@ logging:
         security: debug
     com:
       zaxxer:
-        hikari: inf
+        hikari: info
 spring:
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:shop}
@@ -28,6 +28,10 @@ spring:
     redis:
       host: localhost
       port: ${REDIS_PORT:6379}
+  security:
+    user:
+      name: admin
+      password: admin
 management:
   endpoints:
     web:
