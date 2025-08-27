@@ -1,0 +1,11 @@
+spring:
+  security:
+    user:
+      name: admin
+      password: "{noop}admin"   # quoted to avoid YAML parsing surprises
+
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
